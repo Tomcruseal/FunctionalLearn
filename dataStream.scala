@@ -14,4 +14,12 @@ object dataStream{
     def filterCus[A](as:List[A])(f:A=>Boolean):List[A]={
         foldRight(as,Nil:List[B])
     }
+
+    def flatMapCus[A,B](as:List[A])(f:A=>List[B]):List[B]={    //may be false
+        foldRight(as,Nil:List[B])((x,y)=>Cons(f(x),y))
+    }
+
+    def filterCus1[A](as:List[A])(f:A=>Boolean):List[A]={
+        flatMapCus(as)(a => if(f(a)) List(a) else Nil)
+    }
 }
