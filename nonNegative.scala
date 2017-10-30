@@ -23,7 +23,7 @@ def doubleRandom(rng: RNG): (Double, RNG) = {
 
 def doubleRandom2(rng: RNG): (Double, RNG) = {
     val (i, r) = nonNegativeInt(rng)
-    (1/(Int.MaxValue.toDouble + 1),r)
+    (i/(Int.MaxValue.toDouble + 1),r)
 }
 
 def intDouble(rng: RNG): ((Int, Double), RNG) = {
