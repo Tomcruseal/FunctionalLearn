@@ -46,3 +46,29 @@ def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =
 
 def ints(count: Int): Rand[List[A]] = 
     sequence(List.fill(count)(int))
+
+def flatMap[A, B](f: Rand[A])(g: A => Rand[B]): Rand[B] = 
+    rng => {
+        val (a, r1) = f(rng)
+        g(a)(r1)
+    }
+
+//书本86页示例有错？
+
+def nonNegativeLessThan(n: Int): Rand[Int] = {    // generate an integer n \in [0,n)
+    faltMap(nonNegativeInt) { i =>
+        val mod = i % n
+        if (i + (n-1) - mod >= 0) unit(mod) else nonNegativeLessThan(n)
+    }
+}
+//unit:passes the RNG state without using it ,always returning a constant value rather than a random value
+
+def mapViaFlatMap[A, B](s: Rand[A])(f: A => B): Rand[B] = {
+    flatMap(s)(a => unit(f(a)))
+}
+//a
+
+def map2ViaflatMap[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = {
+    flatMap(ra)(a => map(rb)(b => f(a, b)))  
+}
+//先用flatMap映射（传递）一次状态
