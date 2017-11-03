@@ -10,7 +10,7 @@ def unit[A](a: A): Rand[A] =
 
 def map[A, B](s: Rand[A])(f: A => B): Rand[B] = 
     rng => {
-        val (a, rng2) = a(rng)
+        val (a, rng2) = s(rng)
         (f(a), rng)
     }
 //改变某状态的输出值而不更改状态本身
