@@ -22,4 +22,23 @@ object Par {
 
     def asyncF[A, B](f: A => B): A => Par[B] = 
         a => fork(unit(f(a)))    //think of the previous lazyUnit
+
+    def sortPar(parList: Par[List[Int]]): Par[List[Int]] = 
+        map2(parList, unit(()))((a, _) => a.sorted)
+
+    def map[A, B](pa: Par[A])(f: A => B): Par[B] = 
+        map2(pa, unit(()))((a, _) => f(a))
+    
+    //below is difficult
+    def sequence[A](ps: List[Par[A]]): Par[List[A]]
+ 
+    def sequence_simple[A](l: List[Par[A]]): Par[List[A]] = 
+        l.foldRight[Par[List[A]]](unit(List()))((h, t) => map2(h, t)(_ :: _))
+
+    def sequenceRight[A](as: List[Par[A]]): Par[List[A]] = 
+        as match {
+            case Nil => unit(Nil)
+            case h :: t => map2(h, fork(sequenceRight(t)))(_ :: _) 
+        }
+    //think more deeply needed
 }
