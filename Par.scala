@@ -41,4 +41,48 @@ object Par {
             case h :: t => map2(h, fork(sequenceRight(t)))(_ :: _) 
         }
     //think more deeply needed
+
+    def parMap[A, B](ps: List[A])(f: A => B): Par[List[B]] = fork{
+        val fbs: List[Par[B]] = ps.map(asynF(f))
+        sequence(fbs)
+    }
+
+    def parFilter[A](as: List[A])(f: A => Boolean): Par[List[A]] = {
+        val fbs: List[Par[List[A]]] = as.map(async((a: A) => if f(a) List(a) else List() ))
+        map(sequence(fbs))(_.flatten)
+    }
+
+    //这里前后两个map并不一样
+
+    def choice[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] = 
+        es => 
+          if (run(es)(cond).get) t(es)
+          else f(es)
+
+    def choiceN[A](n: Par[Int])(choices: List[Par[A]): Par[A] = 
+        es => 
+          choices[n](es)
+
+    //注意审题"Let us say that choiceN runs n, and then uses that to select a ..."
+    //所以得先运算出indice
+
+    def choiceN[A](n: Par[Int])(choices: List[Par[A]]): Par[A] = 
+        es =>
+          val indice = run(es)(n).get
+          run(es)choices(indeice)
+          //choices(indices)(es)
+
+    def choice[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] = 
+        choiceN(map(cond)(indice => if indice 0 else 1)List(t, f))
+        //将Par[Boolean] map 为Par[Int]
+
+    def choiceMap[K, V](key :Par[K])(choices: Map[K, Par[V]]): Par[V] = 
+        es =>
+          val keys = run(es)(key).get
+          run(es)choices(keys)
+
+    def chooser[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] = 
+        es => 
+          val pas = run(es)(pa).get
+          run(es)choices(pas)
 }
