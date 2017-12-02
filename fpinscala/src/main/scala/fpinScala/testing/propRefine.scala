@@ -1,5 +1,10 @@
 package fpScala.testing.propRefine
 
+object Prop {
+    type FailedCase = String
+    type SuccessCount = Int
+}
+
 trait Prop {
     def check: Either[(FailedCase, SuccessCount), SuccessCount]
 }
@@ -48,3 +53,29 @@ def buildMsg[A](s: A, e: Exception): String =
     s"test case: $s\n" +
     s"generated an exception: ${e.getMessage}\n" +
     s"stack trace:\n ${e.getStackTrace.mkString("\n")}"
+
+def &&(p: Prop): Prop {
+    (n,rng) => run(n,rng) match{
+        case Passed => p.run(n,rng)  //if the first is passed,then run the second
+        case x => x
+    }
+}
+//in scala standard library , the definition of && is
+//abstract def &&(x: Boolean): Boolean,
+//here 'short-circuit evaluation' is used:
+//above is equal to def &&(x:=>Boolean): Boolean
+
+def ||(p: Prop): Prop {
+    (n,rng) => run(n,rng) match{
+        case Falsified(msg,_) => p.tag(msg).run(n,rng)  //if the first is not passed, then run the second
+        case x => x
+    }
+}
+
+def tag(msg: String):Prop {
+    (n,rng) => run(n,rng) match{
+        case Falsified(e,c) => Falsified(msg + "\n" + e, c)
+        case x => x
+    }
+}
+//tag a message if failed the test 
