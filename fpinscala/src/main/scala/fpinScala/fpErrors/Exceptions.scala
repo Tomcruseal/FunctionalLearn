@@ -10,3 +10,4 @@ def mean_2(xs.Seq[Double]): Double = {
         throw new ArithmeticException("mean of empty lise!")
     else xs.sum / xs.length
 }
+

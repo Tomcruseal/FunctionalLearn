@@ -63,3 +63,33 @@ def variance(xs: Seq[Double]): Option[Double] = {
 def variance_right(xs: Seq[Double]): Option[Double] = 
     mean(xs) flatmap (m => mean(xs.map(x => math.pow(x-m,2))))
 //  Important
+
+def lift[A,B](f: A => B): Option[A] => Option[B] = _ map f
+
+//try to lift funciton abs
+
+val absO: Option[Double] => Option[Double] = lift(math.abs)
+
+def insuranceRateQuote(age: Int, numberOfSpeedingTickets: Int): Double
+
+def parseInsuranceRateQuote{
+    age: String,
+    numberOfSpeedingTickets: String
+    val optAge: Option[Int] = Try{age.toInt}
+    val optTickets: Option[Int] = Try{numberOfSpeedingTickets.toInt}
+    map2(optAge, optTickets)(insuranceRateQuote)
+}
+
+def Try[A](a: => A): Option[A] = {
+    try Some(a)
+    catch {case e : Exception => None}
+}
+
+def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = {
+    a flatMap (aa =>
+    b map (bb => 
+    f(aa, bb)))
+}
+//the answer on github is not user friendly.
+//map has higher priority than => since => begins with
+//= ???
