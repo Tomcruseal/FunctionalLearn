@@ -69,3 +69,12 @@ def union[A](g1: Gen[A], g2: Gen[A]): Gen[A] = {
         Gen(g1.sample)
     else Gen(g2.sample)
 }
+
+def listOf1[A](g: Gen[A]): Gen[List[A]] = {
+    val a = g.choose.sample.nextInt
+    if a != 0
+        listofN(n)
+    else
+        
+        
+}

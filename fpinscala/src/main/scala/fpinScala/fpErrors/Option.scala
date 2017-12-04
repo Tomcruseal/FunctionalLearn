@@ -93,3 +93,8 @@ def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = {
 //the answer on github is not user friendly.
 //map has higher priority than => since => begins with
 //= ???
+
+def sequence[A](a: List[Option[A]]): Option[List[A]] = a match{
+    case Nil => Some(Nil)
+    case h::t => h flatMap (hh => sequence(t) map (hh::_))
+}
