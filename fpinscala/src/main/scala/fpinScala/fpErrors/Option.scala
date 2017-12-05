@@ -98,3 +98,18 @@ def sequence[A](a: List[Option[A]]): Option[List[A]] = a match{
     case Nil => Some(Nil)
     case h::t => h flatMap (hh => sequence(t) map (hh::_))
 }
+
+def parseInt(a: List[String]): Option[List[Int]] =  {
+    sequence(a map (x => Try(x.toInt)))
+}
+
+def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = {
+    a.foldRight[Option[List[B]]](Some(Nil))((h, t) => map2(f(h),t)(_::_))
+}
+
+def map2for [A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): 
+Option[C] = 
+    for {
+        aa <- a
+        bb <- b
+    } yield f(aa,bb)
