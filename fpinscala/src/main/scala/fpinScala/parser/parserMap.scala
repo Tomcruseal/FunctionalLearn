@@ -38,3 +38,4 @@ def product[A,B](p: Parser[A], p2: => Parser[B]): Parser[(A,B)]
 def map2[A,B,C](p: Parser[A], p2: => Parser[B])(f: (A, B) => C): Parser[C] = {
     map(product(p,p2))(f.tupled)
 }
+

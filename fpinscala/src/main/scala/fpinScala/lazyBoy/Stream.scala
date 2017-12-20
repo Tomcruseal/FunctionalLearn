@@ -13,3 +13,9 @@ object Stream {
     def apply[A](as: A*):Stream[A]=
         if (as.isEmpty) empty else cons(as.head, apply(as.tail:_*)
 }
+
+//force h explicitly via h()
+def headOption: Option[A] = this match {
+    case Empty => None
+    case Cons(h, t) => Some(h())
+}
