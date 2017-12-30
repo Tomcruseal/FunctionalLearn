@@ -26,7 +26,7 @@ val fibs = {
     go(0,1)
 }
 
-//below is difficult since I haven't understand the meaning iof unfold
+//below is difficult since I haven't understand the meaning of unfold
 def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = z match{
     case Nil => None
     case Some(_) => Stream.cons(z,unfold(f(z)))
@@ -48,11 +48,19 @@ def from_unfold(n: Int): Stream[Int]={
     unfold(n)(n => Some(n,n+1))
 } 
 
+/*
 def constant_unfold[A](a: A): Stream[A]={
     unfold(a)(a => Some(a,a))    //a replaced by _?
 }
+*/
 
-val ones: Stream[Int] = unfold(1)(1 => Some(1,1))  //可以不要前面的声明  1 replaced by _
+def constant_unfold[A](a: A): Stream[A]={
+    unfold(a)(_ => Some(a,a))   
+}
+
+//val ones: Stream[Int] = unfold(1)(1 => Some(1,1))  //可以不要前面的声明  1 replaced by _
+
+val ones: Stream[Int] = unfold(1)(_ => Some(1,1))
 
 def map_unfold[B](f: A => B): Stream[B]={
     unfold(this)(p => p match{
