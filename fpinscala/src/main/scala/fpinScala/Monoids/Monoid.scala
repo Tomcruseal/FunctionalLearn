@@ -61,4 +61,29 @@ def endoMonoid[A]: Monoid[A => A] {
     val id = (x: A) => x    //Good job! f(x)=x
 }
 
+//difficult
 def monoidLaws[A](m: Monoid[A], gen: Gen[A]): Prop
+
+def concatenate[A](as: List[A], m: Monoid[A]): A = 
+    as.foldLeft(m.id)(m.op)
+
+/*
+def foldMap[A,B](as: List[A], m: Monoid[B])(f: A => B): B = 
+    as.foldLeft(Nil)(f)
+*/
+
+//notice the return type B, not List[B]
+def foldMap[A, B](as: List[A], m: Monoid[B])(f: A => B): B = 
+    as.foldLeft(m.id)((b, a) => m.op(b,f(a)))
+
+def foldMap2[A, B](as: List[A], m: Monoid[B])(f: A => B): B = 
+    as.foldRight(m.id)((a,b) => m.op(f(a),b))
+
+def foldMapV[A, B](v: IndexedSeq[A], m: Monoid[B])(f: A => B): B = 
+    if (v.length() == 0)
+        m.id
+    else if (v.length() == 1)
+        f(v(0))
+    else
+        val (l,r) = v.splitAt(v.length()/2)    //refer to standard library
+        m.op(l.foldRight(m.id)(f),r.foldLeft(m.id)(f))
